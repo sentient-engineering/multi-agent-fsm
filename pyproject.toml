@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "multi-agent-fsm"
+version = "0.1.0"
+description = ""
+authors = ["namsgit <namanbhulawat@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+openai = "^1.40.6"
+pydantic = "^2.8.2"
+colorama = "^0.4.6"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

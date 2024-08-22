@@ -1,6 +1,6 @@
 # Structured JSON is all you need
 
-This project implements a multi-agent framework by modeling agents as Finite State Machines (FSM). [OpenAI's Structured JSON] (https://platform.openai.com/docs/guides/structured-outputs/) offers a simpler way to create reliable agents without relying on complex beefy frameworks.
+This project implements a multi-agent framework by modeling agents as Finite State Machines (FSM). [OpenAI's Structured JSON](https://platform.openai.com/docs/guides/structured-outputs/) offers a simpler way to create reliable agents without relying on complex beefy frameworks.
 
 ## Flow Diagram
 

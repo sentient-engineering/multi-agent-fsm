@@ -1,24 +1,31 @@
 from models.models import Memory, State, Task, PlannerInput, PlannerOutput, HelperInput, HelperOutput
-from agent.agent import Agent
+from agent.base import Agent
 from colorama import Fore, init
 import textwrap
 
 init(autoreset=True)
 
 class Orchestrator:
-    def __init__(self, memory: Memory, state_to_agent_map: dict[State, Agent]):
+    def __init__(self, objective:str, initial_state: State, state_machine: dict[State, list[State]],state_to_agent_map: dict[State, Agent]):
         self.state_to_agent_map = state_to_agent_map
-        self.memory = memory
+        self.state_machine = state_machine
+        self.current_state = initial_state
+        self.memory = Memory(
+        objective=objective,
+        completed_tasks=[],
+        current_task=None,
+        final_response=None
+    )
 
-    def run(self) -> Memory:
-        while self.memory.current_state != State.COMPLETED:
+    def run(self) -> str:
+        while self.current_state != State.COMPLETED:
             self._handle_state()
 
         self._print_final_response()
-        return self.memory
+        return self.memory.final_response
 
     def _handle_state(self):
-        current_state = self.memory.current_state
+        current_state = self.current_state
         if current_state not in self.state_to_agent_map: 
             raise ValueError(f"Unhandled state! No agent for {current_state}")
     
@@ -41,6 +48,7 @@ class Orchestrator:
         
         output = agent.run(input_data)
         
+        # Update memory
         self._update_memory_from_planner(output)
         
         print(f"{Fore.MAGENTA}Planner has updated the memory.")
@@ -64,10 +72,10 @@ class Orchestrator:
     
     def _update_memory_from_planner(self, planner_output: PlannerOutput):
         if planner_output.is_complete:
-            self.memory.current_state = State.COMPLETED
+            self.current_state = State.COMPLETED
             self.memory.final_response = planner_output.final_response
         elif planner_output.next_task:
-            self.memory.current_state = State.HELP
+            self.current_state = State.HELP
             next_task_id = len(self.memory.completed_tasks) + 1
             self.memory.current_task = Task(id=next_task_id, description = planner_output.next_task.description, result=None)
         else:
@@ -77,7 +85,7 @@ class Orchestrator:
     def _update_memory_from_helper(self, helper_output: HelperOutput):
         self.memory.completed_tasks.append(helper_output.completed_task)
         self.memory.current_task = None
-        self.memory.current_state = State.PLAN
+        self.current_state = State.PLAN
         print("naman")
         print(self.memory.completed_tasks)
 
